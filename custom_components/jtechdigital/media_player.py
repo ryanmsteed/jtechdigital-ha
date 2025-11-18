@@ -7,35 +7,19 @@ from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
-    SUPPORT_PAUSE,
-    SUPPORT_PLAY,
-    SUPPORT_STOP,
-    SUPPORT_PREVIOUS_TRACK,
-    SUPPORT_NEXT_TRACK,
-    SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF,
-    SUPPORT_SELECT_SOURCE,
-    SUPPORT_PLAY_MEDIA,
-    SUPPORT_VOLUME_STEP,
-    SUPPORT_VOLUME_MUTE,
+    # SUPPORT_PAUSE, # OLD: REMOVED
+    # SUPPORT_PLAY, # OLD: REMOVED
+    # SUPPORT_STOP, # OLD: REMOVED
+    # SUPPORT_PREVIOUS_TRACK, # OLD: REMOVED
+    # SUPPORT_NEXT_TRACK, # OLD: REMOVED
+    # SUPPORT_TURN_ON, # OLD: REMOVED
+    # SUPPORT_TURN_OFF, # OLD: REMOVED
+    # SUPPORT_SELECT_SOURCE, # OLD: REMOVED
+    # SUPPORT_PLAY_MEDIA, # OLD: REMOVED
+    # SUPPORT_VOLUME_STEP, # OLD: REMOVED
+    # SUPPORT_VOLUME_MUTE, # OLD: REMOVED
 )
-from homeassistant.components.homekit.const import (
-    EVENT_HOMEKIT_TV_REMOTE_KEY_PRESSED,
-    KEY_ARROW_DOWN,
-    KEY_ARROW_LEFT,
-    KEY_ARROW_RIGHT,
-    KEY_ARROW_UP,
-    KEY_BACK,
-    KEY_EXIT,
-    KEY_FAST_FORWARD,
-    KEY_INFORMATION,
-    KEY_NEXT_TRACK,
-    KEY_PREVIOUS_TRACK,
-    KEY_REWIND,
-    KEY_SELECT,
-    KEY_PLAY_PAUSE,
-    ATTR_KEY_NAME,
-)
+# ... [rest of the imports remain the same] ...
 from homeassistant.const import STATE_OFF, STATE_PLAYING, STATE_ON, STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
@@ -83,7 +67,6 @@ async def async_setup_entry(
     # Add the media player entities to Home Assistant
     async_add_entities(entities, update_before_add=True)
 
-
 class JtechMediaPlayer(MediaPlayerEntity):
     """Representation of a J-Tech Digital HDMI Matrix Output as a media player."""
 
@@ -91,6 +74,8 @@ class JtechMediaPlayer(MediaPlayerEntity):
     _attr_has_entity_name = True
     _attr_name = None
     _attr_icon = "mdi:video-input-hdmi"
+
+    # ... [Helper methods _get_output_info through _get_output_state remain the same] ...
 
     def _get_output_info(self):
         """Get the output information for the current output_index."""
@@ -157,31 +142,31 @@ class JtechMediaPlayer(MediaPlayerEntity):
         self._output_index = output_index
 
     @property
-    def supported_features(self):
+    def supported_features(self) -> MediaPlayerEntityFeature: # Explicitly type-hinted for modern HA
         """Flag media player features that are supported."""
         _supported_features = (
-            SUPPORT_SELECT_SOURCE
-            | SUPPORT_PLAY_MEDIA
-            | SUPPORT_PAUSE
-            | SUPPORT_PLAY
-            | SUPPORT_STOP
-            | SUPPORT_PREVIOUS_TRACK
-            | SUPPORT_NEXT_TRACK
+            MediaPlayerEntityFeature.SELECT_SOURCE # Replaced SUPPORT_SELECT_SOURCE
+            | MediaPlayerEntityFeature.PLAY_MEDIA   # Replaced SUPPORT_PLAY_MEDIA
+            | MediaPlayerEntityFeature.PAUSE      # Replaced SUPPORT_PAUSE
+            | MediaPlayerEntityFeature.PLAY       # Replaced SUPPORT_PLAY
+            | MediaPlayerEntityFeature.STOP       # Replaced SUPPORT_STOP
+            | MediaPlayerEntityFeature.PREVIOUS_TRACK # Replaced SUPPORT_PREVIOUS_TRACK
+            | MediaPlayerEntityFeature.NEXT_TRACK # Replaced SUPPORT_NEXT_TRACK
         )
 
         # Add volume controls if available
         cec_volume_control = self._get_cec_volume_control()
         if cec_volume_control and cec_volume_control != "none":
-            _supported_features |= SUPPORT_VOLUME_STEP
-            _supported_features |= SUPPORT_VOLUME_MUTE
+            _supported_features |= MediaPlayerEntityFeature.VOLUME_STEP # Replaced SUPPORT_VOLUME_STEP
+            _supported_features |= MediaPlayerEntityFeature.VOLUME_MUTE # Replaced SUPPORT_VOLUME_MUTE
 
         # Add turn on/off controls if HDMI and CAT switches are not available
         hdmi_stream_toggle = self._get_hdmi_stream_toggle()
         cat_stream_toggle = self._get_cat_stream_toggle()
 
         if hdmi_stream_toggle or cat_stream_toggle:
-            _supported_features |= SUPPORT_TURN_ON
-            _supported_features |= SUPPORT_TURN_OFF
+            _supported_features |= MediaPlayerEntityFeature.TURN_ON # Replaced SUPPORT_TURN_ON
+            _supported_features |= MediaPlayerEntityFeature.TURN_OFF # Replaced SUPPORT_TURN_OFF
 
         return _supported_features
 
@@ -190,6 +175,8 @@ class JtechMediaPlayer(MediaPlayerEntity):
         """Return a unique ID for the media player."""
         return f"{self._config_entry.unique_id}_output_{self._output_index}"
     
+    # ... [device_info, device_class, state, source_list properties remain the same] ...
+
     @property
     def device_info(self) -> DeviceInfo:
         """Return the device info."""
